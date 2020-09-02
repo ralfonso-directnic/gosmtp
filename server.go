@@ -54,7 +54,7 @@ type Server struct {
 
 	// Enable PLAIN/LOGIN authentication
 	Authenticator func(peer *Peer, password []byte) (bool, error)
-
+        WelcomeBanner string
 	// Enable various checks during the SMTP session.
 	// Can be left empty for no restrictions.
 	// If an error is returned, it will be reported in the SMTP session.
@@ -133,6 +133,7 @@ func (srv *Server) newSession(conn net.Conn) *session {
 			bufio.NewReader(conn),
 			bufio.NewWriter(conn),
 		),
+		welcomebanner srv.WelcomeBanner,
 		srv:      srv,
 		envelope: NewEnvelope(),
 		start:    time.Now(),
