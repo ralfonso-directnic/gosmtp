@@ -133,7 +133,7 @@ func (srv *Server) newSession(conn net.Conn) *session {
 			bufio.NewReader(conn),
 			bufio.NewWriter(conn),
 		),
-		welcomebanner srv.WelcomeBanner,
+		welcomebanner: srv.WelcomeBanner,
 		srv:      srv,
 		envelope: NewEnvelope(),
 		start:    time.Now(),
