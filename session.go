@@ -52,7 +52,7 @@ type session struct {
 	conn  net.Conn          // connection
 	bufio *bufio.ReadWriter // buffered input/output
 	id    string            // email id
-
+        WelcomeBanner string
 	envelope         *Envelope    // session envelope
 	state            sessionState // session state
 	badCommandsCount int          // amount of bad commands
@@ -158,7 +158,7 @@ func (s *session) Serve() {
 
 // send Welcome upon new session creation
 func (s *session) handleWelcome() {
-	s.Out(fmt.Sprintf("220 %s ESMTP gomstp(0.0.1) I'm mr. Meeseeks, look at me!", s.peer.ServerName))
+	s.Out(fmt.Sprintf(s.WelcomeBanner, s.peer.ServerName))
 	/*
 		The SMTP protocol allows a server to formally reject a mail session
 		while still allowing the initial connection as follows: a 554
