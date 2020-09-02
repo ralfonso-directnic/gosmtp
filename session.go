@@ -489,7 +489,7 @@ func handleRcpt(s *session, cmd *command) {
 	}
 
 	// extensions size
-	if len(args) > 0 {
+	if len(args) > 1 {
 		for _, ext := range args {
 			extValue := strings.Split(ext, "=")
 			if len(extValue) != 2 {
