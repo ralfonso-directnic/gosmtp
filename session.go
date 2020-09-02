@@ -112,6 +112,7 @@ func (s *session) Out(msgs ...string) {
 func (s *session) Serve() {
 	defer s.conn.Close()
 
+	s.log.SetFlags(log.LstdFlags | log.Lshortfile) 
 	// send welcome
 	s.handleWelcome()
 
