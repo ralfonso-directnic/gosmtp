@@ -88,16 +88,7 @@ func (s *session) ReadLine() (string, error) {
 		return "", err
 	}
 	// trim \r\n
-	
-	if(len(input)>1){ 
-	
-	return input[:len(input)-2], nil
-		
-	}else{ 
-	
-	return input[:len(input)-1], nil
-		
-	}
+	return input,nil
 }
 
 func (s *session) Out(msgs ...string) {
