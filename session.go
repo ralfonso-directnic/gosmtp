@@ -130,6 +130,7 @@ func (s *session) Serve() {
 		}
 		cmd, err := parseCommand(strings.TrimRightFunc(line, unicode.IsSpace))
 		if err != nil {
+			s.log.Printf("ERROR: cmd error: %s\n",err.Error())
 			s.log.Printf("ERROR: unrecognized command: '%s'\n", strings.TrimRightFunc(line, unicode.IsSpace))
 			s.Out(Codes.FailUnrecognizedCmd)
 			s.badCommandsCount++
