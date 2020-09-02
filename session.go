@@ -441,6 +441,9 @@ func handleRcpt(s *session, cmd *command) {
 	}
 
 	args := cmd.arguments
+	
+	s.log.Println(args)
+	
 	if args == nil {
 		s.Out(Codes.FailInvalidRecipient)
 	}
