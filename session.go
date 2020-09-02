@@ -468,6 +468,7 @@ func handleRcpt(s *session, cmd *command) {
 
 	rcpt, err := parseAddress(toParts[1])
 	if err != nil {
+		s.log.Println(err)
 		s.Out(Codes.FailInvalidAddress)
 		return
 	}
@@ -510,6 +511,7 @@ func handleRcpt(s *session, cmd *command) {
 	// Add to recipients
 	err = s.envelope.AddRecipient(rcpt)
 	if err != nil {
+		s.log.Println(err)
 		s.Out(err.Error())
 		return
 	}
