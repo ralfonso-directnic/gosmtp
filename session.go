@@ -88,7 +88,7 @@ func (s *session) ReadLine() (string, error) {
 		return "", err
 	}
 	// trim \r\n
-	return input,nil
+	return strings.TrimRightFunc(input, unicode.IsSpace),nil
 }
 
 func (s *session) Out(msgs ...string) {
@@ -125,16 +125,14 @@ func (s *session) Serve() {
 		}
 		line, err := s.ReadLine()
 		
-		s.log.Println(line)
-		
 		if err != nil {
 			s.log.Printf("ERROR: %s", err.Error())
 			break
 		}
-		cmd, err := parseCommand(strings.TrimRightFunc(line, unicode.IsSpace))
+		cmd, err := parseCommand(line)
 		if err != nil {
 			s.log.Printf("ERROR: cmd error: %s\n",err.Error())
-			s.log.Printf("ERROR: unrecognized command: '%s'\n", strings.TrimRightFunc(line, unicode.IsSpace))
+			s.log.Printf("ERROR: unrecognized command: '%s'\n", line)
 			s.Out(Codes.FailUnrecognizedCmd)
 			s.badCommandsCount++
 			continue
@@ -144,7 +142,7 @@ func (s *session) Serve() {
 			s.badCommandsCount++
 			continue
 		}
-		s.log.Printf("INFO: received command: '%s'", cmd.String())
+		s.log.Printf("INFO: received command: '%s'\n", cmd.String())
 		// select the right handler by commandCode
 		handler := handlers[cmd.commandCode]
 		handler(s, cmd)
