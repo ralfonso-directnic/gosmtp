@@ -1,4 +1,4 @@
-module github.com/matoous/gosmtp
+module github.com/ralfonso-directnic/gosmtp
 
 require (
 	github.com/davecgh/go-spew v1.1.1 // indirect
