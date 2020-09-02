@@ -493,6 +493,7 @@ func handleRcpt(s *session, cmd *command) {
 		for _, ext := range args {
 			extValue := strings.Split(ext, "=")
 			if len(extValue) != 2 {
+				s.log.Println("Extension Failure")
 				s.Out(Codes.FailInvalidAddress)
 				return
 			}
@@ -528,6 +529,8 @@ func handleRcpt(s *session, cmd *command) {
 		s.Out(Codes.FailBadSequence)
 		return
 	}
+	
+	s.log.Println(s.state)
 	s.Out(Codes.SuccessRcptCmd)
 }
 
