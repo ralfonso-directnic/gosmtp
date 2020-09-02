@@ -124,6 +124,9 @@ func (s *session) Serve() {
 			break
 		}
 		line, err := s.ReadLine()
+		
+		s.log.Println(line)
+		
 		if err != nil {
 			s.log.Printf("ERROR: %s", err.Error())
 			break
