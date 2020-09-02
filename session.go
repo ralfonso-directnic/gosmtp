@@ -592,7 +592,9 @@ func handleData(s *session, cmd *command) {
 	var size int64
 	for size < s.srv.Limits.MsgSize {
 		line, err := s.bufio.ReadString('\n')
+	
 		if err != nil {
+			s.log.Println(err)
 			s.Out(fmt.Sprintf(Codes.FailReadErrorDataCmd, err))
 			s.state = sessionStateAborted
 			return
