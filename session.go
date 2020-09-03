@@ -756,7 +756,7 @@ func handleBdat(s *session, cmd *command) {
 			A 250 response MUST be sent to each successful BDAT data block within
 			a mail transaction.
 		*/
-		s.Out(fmt.Sprintf("250 BDAT ok, %d octets received", chunkSize64))
+		s.Out(fmt.Sprintf("250 BDAT ok, %d octets received", n))
 	}
 }
 func handleExpn(s *session, _ *command) {
