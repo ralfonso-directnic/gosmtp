@@ -724,7 +724,9 @@ func handleBdat(s *session, cmd *command) {
 	}
 
 	n, err := s.envelope.Write(resp)
+	s.log.Println(string(resp))
 	if int64(n) != chunkSize64 {
+		s.log.Println(err)
 		s.Out(fmt.Sprintf(Codes.FailReadErrorDataCmd, err))
 		s.state = sessionStateAborted
 		return
