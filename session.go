@@ -718,12 +718,14 @@ func handleBdat(s *session, cmd *command) {
 		s.Out(fmt.Sprintf(Codes.FailReadErrorDataCmd, err))
 		s.state = sessionStateAborted
 		return
-	} else if int64(n) != chunkSize64 {
+	} 
+	/*
+	else if int64(n) != chunkSize64 {
 		s.log.Println("BDATA: Chunk Size Mismatch",int64(n),chunkSize64)
 		s.Out(fmt.Sprintf(Codes.FailReadErrorDataCmd, err))
 		s.state = sessionStateAborted
 		return
-	}
+	}*/
 
 	n, err := s.envelope.Write(resp)
 	s.log.Println(string(resp))
