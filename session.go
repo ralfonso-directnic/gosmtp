@@ -702,17 +702,29 @@ func readBdat(s *session){
 	resp := make([]byte, chunkSize64)
 	if bn, err = s.bufio.Read(resp); err != nil {
     	
+		if(err == io.EOF){
+			
+			s.Out(fmt.Sprintf("250 BDAT ok, BDAT finished, %d octets received", s.envelope.data.Len()))
+			s.envelope.Close()
+			s.state = sessionStateDataDone
+		
+		        // add envelope to delivery system
+		        id, err := s.srv.Handler(s.peer, s.envelope)
+			if err != nil {
+				s.Out("451 temporary queue error")
+			} else {
+				s.Out(fmt.Sprintf("%v %s", Codes.SuccessMessageQueued, id))
+			}
+			return
+		}
+		 
 		s.log.Println("BDATA: Chunk Read",err)
 		s.Out(fmt.Sprintf(Codes.FailReadErrorDataCmd, err))
 		s.state = sessionStateAborted
 		return
 		
 	}
-	//assume we've read it all
-	if(bn==0){ 
-		log.Println("Read 0")
-	}
-
+	
 	n, err = s.envelope.Write(resp)
 	s.log.Println(string(resp),n)
         s.Out(fmt.Sprintf("250 BDAT ok, %d octets received", bn))
