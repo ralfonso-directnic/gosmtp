@@ -708,7 +708,7 @@ func readBdat(s *session){
 	n, err = s.envelope.Write(resp)
 	s.log.Println(string(resp),n)
         s.Out(fmt.Sprintf("250 BDAT ok, %d octets received", bn))
-    
+        s.state = sessionStateStartBdataReader
 }
 
 func handleBdat(s *session, cmd *command) {
