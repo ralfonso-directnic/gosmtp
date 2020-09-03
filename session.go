@@ -713,7 +713,7 @@ func handleBdat(s *session, cmd *command) {
 		message data before sending the appropriate 5XX or 4XX code.
 	*/
 	resp := make([]byte, chunkSize64)
-	if n, err := s.bufio.Read(resp); err != nil {
+	if _, err := s.bufio.Read(resp); err != nil {
 		s.log.Println("BDATA: Chunk Read",err)
 		s.Out(fmt.Sprintf(Codes.FailReadErrorDataCmd, err))
 		s.state = sessionStateAborted
