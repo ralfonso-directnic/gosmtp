@@ -691,9 +691,10 @@ func handleHelp(s *session, _ *command) {
 
 func readBdat(s *session){
     
-    chunkSize64 = 65535
-    
+    chunkSize64 := 65535
+    var err error
     var bn int
+    var n int
 	resp := make([]byte, chunkSize64)
 	if bn, err = s.bufio.Read(resp); err != nil {
     	
@@ -711,7 +712,7 @@ func readBdat(s *session){
 
 	_, err := s.envelope.Write(resp)
 	s.log.Println(string(resp))
-    n, err := s.envelope.Write(resp)
+    n, err = s.envelope.Write(resp)
     s.Out(fmt.Sprintf("250 BDAT ok, %d octets received", bn))
     
 }
