@@ -22,8 +22,10 @@ const (
 	sessionStateReadyForData
 	sessionStateGettingData
 	sessionStateDataDone
+    sessionStateStartBdataReader
 	sessionStateAborted
 	sessionStateWaitingForQuit
+
 )
 
 // Protocol represents the protocol used in the SMTP session
@@ -124,15 +126,30 @@ func (s *session) Serve() {
 			s.state = sessionStateAborted
 			break
 		}
+		
+		
 		line, err := s.ReadLine()
 		s.log.Println("================================")
 		s.log.Println(line)
+		
+
+		
 		if err != nil {
 			s.log.Printf("ERROR: %s", err.Error())
 			break
 		}
+
+        //we started reading bdata and are getting sent more, finish up here
+      
+
 		cmd, err := parseCommand(line)
 		if err != nil {
+    		
+            if(s.state == sessionStateStartBdataReader ){
+              readBdat()
+              continue
+             }
+    		
 			s.log.Printf("ERROR: cmd error: %s\n",err.Error())
 			s.log.Printf("ERROR: unrecognized command: '%s'\n", line)
 			s.Out(Codes.FailUnrecognizedCmd)
@@ -671,6 +688,34 @@ func handleHelp(s *session, _ *command) {
 	*/
 	s.Out(Codes.SuccessHelpCmd + " CaN yOu HelP Me PLeasE!")
 }
+
+func readBdat(s *session){
+    
+    chunkSize64 = 65535
+    
+    var bn int
+	resp := make([]byte, chunkSize64)
+	if bn, err = s.bufio.Read(resp); err != nil {
+    	
+		s.log.Println("BDATA: Chunk Read",err)
+		s.Out(fmt.Sprintf(Codes.FailReadErrorDataCmd, err))
+		s.state = sessionStateAborted
+		return
+		
+	}else if int64(n) != chunkSize64 {
+		s.log.Println("BDATA: Chunk Size Mismatch,starting state machine",int64(bn),chunkSize64)
+		s.Out(fmt.Sprintf("250 BDAT ok, %d octets received", bn))
+		s.state = sessionStateStartBdataReader
+		return
+	}
+
+	_, err := s.envelope.Write(resp)
+	s.log.Println(string(resp))
+    n, err := s.envelope.Write(resp)
+    s.Out(fmt.Sprintf("250 BDAT ok, %d octets received", bn))
+    
+}
+
 func handleBdat(s *session, cmd *command) {
 	args := cmd.arguments
 
@@ -715,21 +760,19 @@ func handleBdat(s *session, cmd *command) {
 	
 	var bn int
 	resp := make([]byte, chunkSize64)
-
 	if bn, err = s.bufio.Read(resp); err != nil {
-			s.log.Println("BDATA: Chunk Read",err)
-			s.Out(fmt.Sprintf(Codes.FailReadErrorDataCmd, err))
-			s.state = sessionStateAborted
-			return
-	} 
-	
-	/*
-	else if int64(n) != chunkSize64 {
-		s.log.Println("BDATA: Chunk Size Mismatch",int64(n),chunkSize64)
+    	
+		s.log.Println("BDATA: Chunk Read",err)
 		s.Out(fmt.Sprintf(Codes.FailReadErrorDataCmd, err))
 		s.state = sessionStateAborted
 		return
-	}*/
+		
+	}else if int64(n) != chunkSize64 {
+		s.log.Println("BDATA: Chunk Size Mismatch,starting state machine",int64(bn),chunkSize64)
+		s.Out(fmt.Sprintf("250 BDAT ok, %d octets received", bn))
+		s.state = sessionStateStartBdataReader
+		return
+	}
 
 	n, err := s.envelope.Write(resp)
 	s.log.Println(string(resp))
