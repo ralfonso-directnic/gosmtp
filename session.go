@@ -710,8 +710,8 @@ func readBdat(s *session){
 		return
 	}
 
-	_, err = s.envelope.Write(resp)
-	s.log.Println(string(resp))
+	n, err = s.envelope.Write(resp)
+	s.log.Println(string(resp),n)
     s.Out(fmt.Sprintf("250 BDAT ok, %d octets received", bn))
     
 }
@@ -767,7 +767,7 @@ func handleBdat(s *session, cmd *command) {
 		s.state = sessionStateAborted
 		return
 		
-	}else if int64(n) != chunkSize64 {
+	}else if int64(bn) != chunkSize64 {
 		s.log.Println("BDATA: Chunk Size Mismatch,starting state machine",int64(bn),chunkSize64)
 		s.Out(fmt.Sprintf("250 BDAT ok, %d octets received", bn))
 		s.state = sessionStateStartBdataReader
