@@ -146,7 +146,7 @@ func (s *session) Serve() {
 		if err != nil {
     		
             if(s.state == sessionStateStartBdataReader ){
-              readBdat()
+              readBdat(s)
               continue
              }
     		
@@ -691,7 +691,7 @@ func handleHelp(s *session, _ *command) {
 
 func readBdat(s *session){
     
-    chunkSize64 := 65535
+    chunkSize64 := int64(65535)
     var err error
     var bn int
     var n int
@@ -710,9 +710,8 @@ func readBdat(s *session){
 		return
 	}
 
-	_, err := s.envelope.Write(resp)
+	_, err = s.envelope.Write(resp)
 	s.log.Println(string(resp))
-    n, err = s.envelope.Write(resp)
     s.Out(fmt.Sprintf("250 BDAT ok, %d octets received", bn))
     
 }
