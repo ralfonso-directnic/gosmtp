@@ -715,12 +715,14 @@ func handleBdat(s *session, cmd *command) {
 	
 	var bn int
 	resp := make([]byte, chunkSize64)
-	if bn, err = s.bufio.Read(resp); err != nil {
-		s.log.Println("BDATA: Chunk Read",err)
-		s.Out(fmt.Sprintf(Codes.FailReadErrorDataCmd, err))
-		s.state = sessionStateAborted
-		return
-	} 
+	while(int64(bn)<chunkSize64){
+		if bn, err = s.bufio.Read(resp); err != nil {
+			s.log.Println("BDATA: Chunk Read",err)
+			s.Out(fmt.Sprintf(Codes.FailReadErrorDataCmd, err))
+			s.state = sessionStateAborted
+			return
+		} 
+	}
 	/*
 	else if int64(n) != chunkSize64 {
 		s.log.Println("BDATA: Chunk Size Mismatch",int64(n),chunkSize64)
