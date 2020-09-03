@@ -737,6 +737,16 @@ func handleBdat(s *session, cmd *command) {
 		s.Out(fmt.Sprintf("250 BDAT ok, BDAT finished, %d octets received", s.envelope.data.Len()))
 		s.envelope.Close()
 		s.state = sessionStateDataDone
+		
+		// add envelope to delivery system
+		id, err := s.srv.Handler(s.peer, s.envelope)
+		if err != nil {
+			s.Out("451 temporary queue error")
+		} else {
+			s.Out(fmt.Sprintf("%v %s", Codes.SuccessMessageQueued, id))
+		}
+		
+		
 	} else {
 		/*
 			A 250 response MUST be sent to each successful BDAT data block within
