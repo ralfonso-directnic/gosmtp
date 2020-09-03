@@ -712,8 +712,10 @@ func handleBdat(s *session, cmd *command) {
 		received, the receiver-SMTP MUST accept and discard the associated
 		message data before sending the appropriate 5XX or 4XX code.
 	*/
+	
+	var bn int
 	resp := make([]byte, chunkSize64)
-	if bn, err := s.bufio.Read(resp); err != nil {
+	if bn, err = s.bufio.Read(resp); err != nil {
 		s.log.Println("BDATA: Chunk Read",err)
 		s.Out(fmt.Sprintf(Codes.FailReadErrorDataCmd, err))
 		s.state = sessionStateAborted
