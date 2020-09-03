@@ -212,8 +212,8 @@ func handleEhlo(s *session, cmd *command) {
 	// https://tools.ietf.org/html/rfc6152
 	ehloResp = append(ehloResp, "250-8BITMIME")
 	// https://tools.ietf.org/html/rfc3030
-	ehloResp = append(ehloResp, "250-CHUNKING")
-	ehloResp = append(ehloResp, "250-BINARYMIME")
+	//ehloResp = append(ehloResp, "250-CHUNKING")
+	//ehloResp = append(ehloResp, "250-BINARYMIME")
 	// https://tools.ietf.org/html/rfc6531
 	ehloResp = append(ehloResp, "250-SMTPUTF8")
 	// https://tools.ietf.org/html/rfc2920
