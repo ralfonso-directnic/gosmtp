@@ -22,7 +22,7 @@ const (
 	sessionStateReadyForData
 	sessionStateGettingData
 	sessionStateDataDone
-    sessionStateStartBdataReader
+        sessionStateStartBdataReader
 	sessionStateAborted
 	sessionStateWaitingForQuit
 
@@ -132,11 +132,15 @@ func (s *session) Serve() {
 		s.log.Println("================================")
 		s.log.Println(line)
 		
-
-		
 		if err != nil {
-			s.log.Printf("ERROR: %s", err.Error())
-			break
+			
+		     if(s.state == sessionStateStartBdataReader ){
+		      readBdat(s)
+		      continue
+		     }
+			
+		     s.log.Printf("ERROR: %s", err.Error())
+		     break
 		}
 
         //we started reading bdata and are getting sent more, finish up here
@@ -703,6 +707,10 @@ func readBdat(s *session){
 		s.state = sessionStateAborted
 		return
 		
+	}
+	//assume we've read it all
+	if(bn==0){ 
+		log.Println("Read 0")
 	}
 
 	n, err = s.envelope.Write(resp)
