@@ -715,7 +715,7 @@ func handleBdat(s *session, cmd *command) {
 	
 	var bn int
 	resp := make([]byte, chunkSize64)
-	while(int64(bn)<chunkSize64){
+	for( int64(bn)<chunkSize64 ){
 		if bn, err = s.bufio.Read(resp); err != nil {
 			s.log.Println("BDATA: Chunk Read",err)
 			s.Out(fmt.Sprintf(Codes.FailReadErrorDataCmd, err))
