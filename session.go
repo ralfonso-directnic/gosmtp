@@ -218,6 +218,7 @@ func handleEhlo(s *session, cmd *command) {
 	// https://tools.ietf.org/html/rfc3207
 	if s.srv.TLSConfig != nil { // do tls for this server
 		if !s.tls { // already in tls stream
+			s.log.Println("TLS Enabled")
 			ehloResp = append(ehloResp, "250-STARTTLS")
 		}
 	}
