@@ -135,11 +135,6 @@ func (s *session) Serve() {
 		
 		if err != nil {
 			
-		     if(s.state == sessionStateStartBdataReader ){
-		      readBdat(s)
-		      continue
-		     }
-			
 		     s.log.Printf("ERROR: %s", err.Error())
 		     break
 		}
@@ -149,12 +144,7 @@ func (s *session) Serve() {
 
 		cmd, err := parseCommand(line)
 		if err != nil {
-    		
-            if(s.state == sessionStateStartBdataReader ){
-              readBdat(s)
-              continue
-             }
-    		
+  
 			s.log.Printf("ERROR: cmd error: %s\n",err.Error())
 			s.log.Printf("ERROR: unrecognized command: '%s'\n", line)
 			s.Out(Codes.FailUnrecognizedCmd)
@@ -692,44 +682,6 @@ func handleHelp(s *session, _ *command) {
 		information as a response.
 	*/
 	s.Out(Codes.SuccessHelpCmd + " CaN yOu HelP Me PLeasE!")
-}
-
-func readBdat(s *session){
-    
-    chunkSize64 := int64(65535)
-    var err error
-    var bn int
-    var n int
-	resp := make([]byte, chunkSize64)
-	if bn, err = s.bufio.Read(resp); err != nil {
-    	
-		if(err == io.EOF){
-			
-			s.Out(fmt.Sprintf("250 BDAT ok, BDAT finished, %d octets received", s.envelope.data.Len()))
-			s.envelope.Close()
-			s.state = sessionStateDataDone
-		
-		        // add envelope to delivery system
-		        id, err := s.srv.Handler(s.peer, s.envelope)
-			if err != nil {
-				s.Out("451 temporary queue error")
-			} else {
-				s.Out(fmt.Sprintf("%v %s", Codes.SuccessMessageQueued, id))
-			}
-			return
-		}
-		 
-		s.log.Println("BDATA: Chunk Read",err)
-		s.Out(fmt.Sprintf(Codes.FailReadErrorDataCmd, err))
-		s.state = sessionStateAborted
-		return
-		
-	}
-	
-	n, err = s.envelope.Write(resp)
-	s.log.Println(string(resp),n)
-        s.Out(fmt.Sprintf("250 BDAT ok, %d octets received", bn))
-        s.state = sessionStateStartBdataReader
 }
 
 func handleBdat(s *session, cmd *command) {
