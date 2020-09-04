@@ -753,6 +753,9 @@ func handleBdat(s *session, cmd *command) {
 	}
 
 	chunkSize64, err := strconv.ParseInt(args[0], 10, 64)
+	
+	log.Println("ARGS",args)
+	
 	if err != nil {
 		s.Out(Codes.FailUnrecognizedCmd) // TODO use the right code
 		s.badCommandsCount++
@@ -775,8 +778,12 @@ func handleBdat(s *session, cmd *command) {
 	*/
 	
 	var bn int
+	
 	resp := make([]byte, chunkSize64)
-	if bn, err = s.bufio.Read(resp); err != nil {
+	
+	nr := s.bufio.Reader
+	
+	if bn, err = io.ReadFull(nr, resp); err != nil {
     	
 		s.log.Println("BDATA: Chunk Read",err)
 		s.Out(fmt.Sprintf(Codes.FailReadErrorDataCmd, err))
@@ -786,7 +793,7 @@ func handleBdat(s *session, cmd *command) {
 	}else if int64(bn) != chunkSize64 {
 		s.log.Println("BDATA: Chunk Size Mismatch,starting state machine",int64(bn),chunkSize64)
 		s.Out(fmt.Sprintf("250 BDAT ok, %d octets received", bn))
-		s.state = sessionStateStartBdataReader
+		//s.state = sessionStateStartBdataReader
 		return
 	}
 
